@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  mariadb:
+    image: mariadb:10.4.7
+    container_name: mariadb
+    ports:
+      # 端口映射
+      - 3306:3306
+    volumes:
+      # 数据库目录映射
+      - ./mariadb/data:/var/lib/mysql
+      - ./mariadb/config:/etc/mysql/conf.d
+    environment:
+      TIME_ZONE: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: wangle
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.0.28
+    ports:
+      - "27017:27017"
+    environment:
+      TIME_ZONE: Asia/Shanghai
+      wiredTigerCacheSizeGB: 2
+    volumes:
+      - ./mongo/db:/data/db
+      - ./mongo/logs:/data/log
+      - ./mongo/config:/data/conf
+      - ./mongo/elm:/opt
