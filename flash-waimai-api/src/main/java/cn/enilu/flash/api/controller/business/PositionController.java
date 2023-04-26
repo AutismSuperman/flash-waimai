@@ -76,7 +76,7 @@ public class PositionController extends BaseController {
             Map map = positionService.findById(cityId);
             cityName = map.get("name").toString();
         }
-        return Rets.success(positionService.searchPlace(cityName, keyword));
+        return Rets.success(positionService.searchPlaceBaidu(cityName, keyword));
 
     }
 

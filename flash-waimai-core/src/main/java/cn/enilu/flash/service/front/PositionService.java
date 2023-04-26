@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Created  on 2017/12/29 0029.
  *
- *@Author enilu
+ * @Author enilu
  */
 @Service
 public class PositionService {
@@ -36,13 +36,14 @@ public class PositionService {
 
     /**
      * 根据ip获取所属城市id和名称
+     *
      * @param ip
      * @return
      */
-    @Cacheable(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':guess_city:'+#ip")
-    public City guessCity(String ip){
+    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':guess_city:'+#ip")
+    public City guessCity(String ip) {
         CityInfo cityInfo = getPostion(ip);
-        if(cityInfo!=null) {
+        if (cityInfo != null) {
             Map map = findByName(cityInfo.getCity());
             City city = new City();
             city.setId(Integer.valueOf(map.get("id").toString()));
@@ -51,9 +52,10 @@ public class PositionService {
         }
         return null;
     }
-    @Cacheable(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':position:'+#ip")
+
+    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':position:'+#ip")
     public CityInfo getPostion(String ip) {
-        logger.info("根据ip:{}获取城市信息",ip);
+        logger.info("根据ip:{}获取城市信息", ip);
         Map<String, String> map = Maps.newHashMap();
         map.put("ip", ip);
         map.put("key", appConfiguration.getTencentKey());
@@ -99,20 +101,43 @@ public class PositionService {
         }
         return null;
     }
-    @Cacheable(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#cityName+'-'+#keyword")
+
+    public List searchPlaceBaidu(String cityName, String keyword) {
+        logger.info("获取地址信息:{}，{}", cityName, keyword);
+        Map<String, String> params = Maps.newHashMap();
+        params.put("ak", "ZUacD7dMK72t71eRoRaZ7kh7OG0WpmDK");
+        params.put("output", "json");
+        params.put("region", cityName);
+        params.put("query", keyword);
+        params.put("page_size", "10");
+        try {
+            String str = HttpClients.get(appConfiguration.getBaiduApiUrl() + "place/v2/search", params);
+            Map result = (Map) Json.fromJson(str);
+            if (Integer.valueOf(result.get("status").toString()).intValue() == 0) {
+                return (List) result.get("results");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return null;
+
+    }
+
+
+    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':'+#cityName+'-'+#keyword")
     public List searchPlace(String cityName, String keyword) {
-        logger.info("获取地址信息:{}，{}",cityName,keyword);
+        logger.info("获取地址信息:{}，{}", cityName, keyword);
         Map<String, String> params = Maps.newHashMap();
         params.put("key", appConfiguration.getTencentKey());
         try {
-            params.put("keyword", URLEncoder.encode(keyword,"utf-8"));
+            params.put("keyword", URLEncoder.encode(keyword, "utf-8"));
         } catch (UnsupportedEncodingException e) {
-           logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         try {
-            params.put("boundary", "region(" + URLEncoder.encode(cityName,"utf-8") + ",0)");
+            params.put("boundary", "region(" + URLEncoder.encode(cityName, "utf-8") + ",0)");
         } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         params.put("page_size", "10");
         try {
@@ -127,6 +152,7 @@ public class PositionService {
         return null;
 
     }
+
 
     public Map findById(Integer id) {
         Map cities = mongoRepository.findOne("cities");
@@ -169,9 +195,9 @@ public class PositionService {
      * @return
      */
 
-    @Cacheable(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#geohash")
+    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':'+#geohash")
     public Map pois(String geohash) {
-        logger.info("获取地址信息:{}",geohash);
+        logger.info("获取地址信息:{}", geohash);
         Map<String, String> map = Maps.newHashMap();
         map.put("location", geohash);
         map.put("key", appConfiguration.getTencentKey());
@@ -180,13 +206,13 @@ public class PositionService {
             String str = HttpClients.get(appConfiguration.getQqApiUrl() + "geocoder/v1", map);
             Map response = (Map) Json.fromJson(str);
             if ("0".equals(response.get("status").toString())) {
-                result.put("address", Mapl.cell(response,"result.address"));
+                result.put("address", Mapl.cell(response, "result.address"));
                 result.put("city", Mapl.cell(response, "result.address_component.city"));
                 result.put("name", Mapl.cell(response, "result.formatted_addresses.recommend"));
                 result.put("latitude", Mapl.cell(response, "result.location.lat"));
                 result.put("longitude", Mapl.cell(response, "result.location.lng"));
-            }else{
-                logger.error("获取地理位置信息失败:{}",str);
+            } else {
+                logger.error("获取地理位置信息失败:{}", str);
             }
 
         } catch (Exception e) {
@@ -195,12 +221,12 @@ public class PositionService {
         return result;
     }
 
-    public Map<String,String> getDistance(String from,String to){
-        Map<String,String> params = Maps.newHashMap(
-                "ak",appConfiguration.getBaiduKey(),
-                "output","json",
-                "origins",from,
-                "destinations",to
+    public Map<String, String> getDistance(String from, String to) {
+        Map<String, String> params = Maps.newHashMap(
+                "ak", appConfiguration.getBaiduKey(),
+                "output", "json",
+                "origins", from,
+                "destinations", to
         );
         try {
             //使用百度地图api获取距离值：
@@ -209,16 +235,16 @@ public class PositionService {
             //routematrix/v2/walking 步行
             String str = HttpClients.get(appConfiguration.getBaiduApiUrl() + "routematrix/v2/riding", params);
             Map response = (Map) Json.fromJson(str);
-            if("0".equals(response.get("status").toString())){
-              Map result =  Maps.newHashMap(
-                      "distance",Mapl.cell(response,"result[0].distance.text"),
-                      "duration",Mapl.cell(response,"result[0].duration.text")
-              );
-              return result;
+            if ("0".equals(response.get("status").toString())) {
+                Map result = Maps.newHashMap(
+                        "distance", Mapl.cell(response, "result[0].distance.text"),
+                        "duration", Mapl.cell(response, "result[0].duration.text")
+                );
+                return result;
             }
 
-        }catch (Exception e){
-            logger.error("通过百度获取配送距离失败",e);
+        } catch (Exception e) {
+            logger.error("通过百度获取配送距离失败", e);
         }
         return null;
     }
