@@ -3,6 +3,7 @@ package cn.enilu.flash.dao;
 import cn.enilu.flash.bean.entity.front.BaseMongoEntity;
 import cn.enilu.flash.utils.factory.Page;
 import com.mongodb.client.result.UpdateResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,14 +51,17 @@ public class MongoRepository {
     public void delete(String collectionName, Map<String, Object> keyValues) {
         mongoTemplate.remove(Query.query(criteria(keyValues)), collectionName);
     }
-    public void clear(Class klass){
+
+    public void clear(Class klass) {
         mongoTemplate.dropCollection(klass);
         mongoTemplate.createCollection(klass);
     }
-    public void clear(String collectionName){
+
+    public void clear(String collectionName) {
         mongoTemplate.dropCollection(collectionName);
         mongoTemplate.createCollection(collectionName);
     }
+
     public void update(BaseMongoEntity entity) {
         mongoTemplate.save(entity);
     }
@@ -89,13 +93,15 @@ public class MongoRepository {
     public <T, P> T findOne(Class<T> klass, P key) {
         return findOne(klass, "id", key);
     }
-    public <T> T findOne(Class<T> klass, Map<String,Object> params) {
+
+    public <T> T findOne(Class<T> klass, Map<String, Object> params) {
         Criteria criteria = criteria(params);
         if (criteria != null) {
             return mongoTemplate.findOne(Query.query(criteria), klass);
         }
         return null;
     }
+
     public <T> T findOne(Class<T> klass, String key, Object value) {
         return mongoTemplate.findOne(Query.query(Criteria.where(key).is(value)), klass);
     }
@@ -178,14 +184,15 @@ public class MongoRepository {
 
     /**
      * 查询指定位置附近的商家
+     *
      * @param x
      * @param y
      * @param collectionName
      * @param params
-     * @param miles 公里数
+     * @param miles          公里数
      * @return
      */
-    public GeoResults<Map> near(double x, double y, String collectionName, Map<String, Object> params,Integer miles) {
+    public GeoResults<Map> near(double x, double y, String collectionName, Map<String, Object> params, Integer miles) {
         Point location = new Point(x, y);
         NearQuery nearQuery = NearQuery.near(location).maxDistance(new Distance(miles, Metrics.MILES));
         if (params != null && !params.isEmpty()) {
@@ -194,13 +201,15 @@ public class MongoRepository {
         }
         try {
             return mongoTemplate.geoNear(nearQuery, Map.class, collectionName);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
+
     /**
      * 查询指定位置附近的商家，默认查询五十公里范围内(测试环境方便演示，设置的值较大，实际业务中建议设置为5公里以内)
+     *
      * @param x
      * @param y
      * @param collectionName
@@ -208,7 +217,7 @@ public class MongoRepository {
      * @return
      */
     public GeoResults<Map> near(double x, double y, String collectionName, Map<String, Object> params) {
-        return near(x,y,collectionName,params,50);
+        return near(x, y, collectionName, params, 1000);
     }
 
     public long count(Class klass) {
@@ -238,14 +247,28 @@ public class MongoRepository {
         }
     }
 
-    private Criteria criteria(Map<String, Object> map) {
+    private Criteria like(Map<String, Object> map) {
         Criteria criteria = null;
         if (map != null) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (criteria == null) {
-                    criteria = Criteria.where(entry.getKey()).is(entry.getValue());
+                    criteria = Criteria.where(entry.getKey()).regex(".*" + entry.getValue() + ".*");
                 } else {
                     criteria.and(entry.getKey()).is(entry.getValue());
+                }
+            }
+        }
+        return criteria;
+    }
+
+    private Criteria criteria(Map<String, Object> map) {
+        Criteria criteria = new Criteria();
+        if (map != null) {
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                if (StringUtils.equals(entry.getKey(), "name")) {
+                    criteria.andOperator(Criteria.where(entry.getKey()).regex(".*" + entry.getValue() + ".*"));
+                } else {
+                    criteria.andOperator(Criteria.where(entry.getKey()).is(entry.getValue()));
                 }
             }
         }

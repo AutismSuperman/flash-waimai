@@ -12,5 +12,5 @@ target
 launch.json
 .vscode
 dist
-todo.md!/flash-dev/mongo/
-!/flash-dev/mariadb/
+/flash-dev/mongo/
+/flash-dev/mariadb/

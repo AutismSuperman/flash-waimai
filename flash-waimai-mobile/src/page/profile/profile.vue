@@ -192,9 +192,9 @@ export default {
                 this.avatar = this.userInfo.avatar;
                 this.username = this.userInfo.username;
                 this.mobile = this.userInfo.mobile || '暂无绑定手机号';
-                this.balance = this.userInfo.balance;
-                this.count = this.userInfo.gift_amount;
-                this.pointNumber = this.userInfo.point;
+                this.balance = this.userInfo.balance==null?0:this.userInfo.balance
+                this.count = this.userInfo.gift_amount==null?0:this.userInfo.gift_amount;
+                this.pointNumber = this.userInfo.point==null?0:this.userInfo.point;
             }else{
                 this.username = '登录/注册';
                 this.mobile = '暂无绑定手机号';

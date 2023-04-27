@@ -61,7 +61,10 @@ public class User2Controller extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getUser(@RequestParam("user_id") Long userId) {
-        return Rets.success(mongoRepository.findOne(FrontUser.class, "user_id", userId));
+        FrontUser user = mongoRepository.findOne(FrontUser.class, "user_id", userId);
+        FrontUserInfo userInfo = mongoRepository.findOne(FrontUserInfo.class, Maps.newHashMap("user_id", userId));
+        user.setAvatar(userInfo.getAvatar());
+        return Rets.success(user);
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)

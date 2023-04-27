@@ -17,6 +17,7 @@ public class FrontUser extends BaseMongoEntity{
     private String username;
     private String password;
     private Long user_id;
+    private String avatar;
     /**
      * 小程序openid
      */
