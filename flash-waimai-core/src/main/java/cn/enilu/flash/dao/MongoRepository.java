@@ -19,10 +19,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created on 2017/12/29 0029.
@@ -247,30 +244,19 @@ public class MongoRepository {
         }
     }
 
-    private Criteria like(Map<String, Object> map) {
-        Criteria criteria = null;
-        if (map != null) {
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                if (criteria == null) {
-                    criteria = Criteria.where(entry.getKey()).regex(".*" + entry.getValue() + ".*");
-                } else {
-                    criteria.and(entry.getKey()).is(entry.getValue());
-                }
-            }
-        }
-        return criteria;
-    }
-
     private Criteria criteria(Map<String, Object> map) {
         Criteria criteria = new Criteria();
         if (map != null) {
+            List<Criteria> criteriaList = new ArrayList<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (StringUtils.equals(entry.getKey(), "name")) {
-                    criteria.andOperator(Criteria.where(entry.getKey()).regex(".*" + entry.getValue() + ".*"));
+                    criteriaList.add(Criteria.where(entry.getKey()).is(entry.getValue()));
+                    //criteria.andOperator(Criteria.where(entry.getKey()).regex(".*" + entry.getValue() + ".*"));
                 } else {
-                    criteria.andOperator(Criteria.where(entry.getKey()).is(entry.getValue()));
+                    criteriaList.add(Criteria.where(entry.getKey()).is(entry.getValue()));
                 }
             }
+            criteria.andOperator(criteriaList.toArray(new Criteria[criteriaList.size()]));
         }
         return criteria;
     }
