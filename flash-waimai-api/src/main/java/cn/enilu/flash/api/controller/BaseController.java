@@ -171,7 +171,7 @@ public class BaseController {
         String ip = getRequest().getHeader("x-forwarded-for");
         if(Strings.isNullOrEmpty(ip)){
             //测试ip
-            ip = "101.81.121.39";
+            ip = "223.71.228.22";
         }
         return ip;
 
