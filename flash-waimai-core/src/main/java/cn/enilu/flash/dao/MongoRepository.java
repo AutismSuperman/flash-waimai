@@ -245,18 +245,15 @@ public class MongoRepository {
     }
 
     private Criteria criteria(Map<String, Object> map) {
-        Criteria criteria = new Criteria();
+        Criteria criteria = null;
         if (map != null) {
-            List<Criteria> criteriaList = new ArrayList<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
-                if (StringUtils.equals(entry.getKey(), "name")) {
-                    criteriaList.add(Criteria.where(entry.getKey()).is(entry.getValue()));
-                    //criteria.andOperator(Criteria.where(entry.getKey()).regex(".*" + entry.getValue() + ".*"));
+                if (criteria == null) {
+                    criteria = Criteria.where(entry.getKey()).is(entry.getValue());
                 } else {
-                    criteriaList.add(Criteria.where(entry.getKey()).is(entry.getValue()));
+                    criteria.and(entry.getKey()).is(entry.getValue());
                 }
             }
-            criteria.andOperator(criteriaList.toArray(new Criteria[criteriaList.size()]));
         }
         return criteria;
     }
