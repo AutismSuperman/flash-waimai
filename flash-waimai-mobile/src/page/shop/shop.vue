@@ -170,8 +170,8 @@
                                 <ul>
                                     <li v-for="(item, index) in cartFoodList" :key="index" class="cart_food_li">
                                         <div class="cart_list_num">
-                                            <p class="ellipsis">{{item.name}}</p>
-                                            <p class="ellipsis">{{item.specs}}</p>
+                                            <p class="ellipsis">{{item.name}}({{item.specs}})</p>
+                                            <!--<p class="ellipsis">{{item.specs}}</p>-->
                                         </div>
                                         <div class="cart_list_price">
                                             <span>¥</span>
@@ -287,7 +287,17 @@
                             <span>¥ </span>
                             <span>{{choosedFoods.specfoods[specsIndex].price}}</span>
                         </div>
-                        <div class="specs_addto_cart" @click="addSpecs(choosedFoods.category_id, choosedFoods.item_id, choosedFoods.specfoods[specsIndex].food_id, choosedFoods.specfoods[specsIndex].name, choosedFoods.specfoods[specsIndex].price, choosedFoods.specifications[0].values[specsIndex], choosedFoods.specfoods[specsIndex].packing_fee, choosedFoods.specfoods[specsIndex].sku_id, choosedFoods.specfoods[specsIndex].stock)">加入购物车</div>
+                        <div class="specs_addto_cart" @click="addSpecs(
+                          choosedFoods,
+                          choosedFoods.category_id,
+                          choosedFoods.item_id,
+                          choosedFoods.specfoods[specsIndex].food_id,
+                          choosedFoods.name,
+                          choosedFoods.specfoods[specsIndex].price,
+                          choosedFoods.specifications[0].values[specsIndex],
+                          choosedFoods.specfoods[specsIndex].packing_fee,
+                          choosedFoods.specfoods[specsIndex].sku_id,
+                          choosedFoods.specfoods[specsIndex].stock)">加入购物车</div>
                     </footer>
                 </div>
             </transition>

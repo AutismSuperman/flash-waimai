@@ -518,7 +518,7 @@
     overflow-y: auto;
     .cart_food_li{
       @include fj;
-      padding: .6rem .5rem;
+      padding: 1.0rem .6rem;
       .cart_list_num{
         width: 55%;
         p:nth-of-type(1){

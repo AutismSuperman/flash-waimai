@@ -203,7 +203,7 @@ export default {
       this.totalPrice = 0;
       this.cartFoodList = [];
       this.menuList.forEach((item, index) => {
-        console.log('1',item.foods[0])
+        //fixme  console.log('1',item.foods[0])
         if (this.shopCart&&this.shopCart[item.foods[0].category_id]) {
           let num = 0;
           Object.keys(this.shopCart[item.foods[0].category_id]).forEach(itemid => {
@@ -298,7 +298,8 @@ export default {
       this.specsIndex = index;
     },
     //多规格商品加入购物车
-    addSpecs(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock){
+    addSpecs(choosedFoods,category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock){
+      console.log(choosedFoods)
       food_id = item_id
       this.ADD_CART({shopid: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
       this.showChooseList();
