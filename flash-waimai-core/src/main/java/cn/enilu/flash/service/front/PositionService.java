@@ -40,7 +40,7 @@ public class PositionService {
      * @param ip
      * @return
      */
-    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':guess_city:'+#ip")
+    //@Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':guess_city:'+#ip")
     public City guessCity(String ip) {
         CityInfo cityInfo = getPostion(ip);
         if (cityInfo != null) {
@@ -53,7 +53,7 @@ public class PositionService {
         return null;
     }
 
-    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':position:'+#ip")
+    //@Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':position:'+#ip")
     public CityInfo getPostion(String ip) {
         logger.info("根据ip:{}获取城市信息", ip);
         Map<String, String> map = Maps.newHashMap();
@@ -124,7 +124,7 @@ public class PositionService {
     }
 
 
-    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':'+#cityName+'-'+#keyword")
+    //@Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':'+#cityName+'-'+#keyword")
     public List searchPlace(String cityName, String keyword) {
         logger.info("获取地址信息:{}，{}", cityName, keyword);
         Map<String, String> params = Maps.newHashMap();
@@ -195,7 +195,7 @@ public class PositionService {
      * @return
      */
 
-    @Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':'+#geohash")
+    //@Cacheable(value = Cache.APPLICATION, key = "#root.targetClass.simpleName+':'+#geohash")
     public Map pois(String geohash) {
         logger.info("获取地址信息:{}", geohash);
         Map<String, String> map = Maps.newHashMap();

@@ -30,7 +30,7 @@ public abstract  class BaseService<T, ID extends Serializable, R extends BaseRep
 
 
     @Override
-    @CacheEvict(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#id")
+    //@CacheEvict(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#id")
     public void delete(ID id) {
         dao.deleteById(id);
     }
@@ -50,7 +50,7 @@ public abstract  class BaseService<T, ID extends Serializable, R extends BaseRep
     }
 
     @Override
-    @Cacheable(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#id")
+    //@Cacheable(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#id")
     public T get(ID id) {
         return  dao.findById(id).get();
     }
@@ -120,7 +120,7 @@ public abstract  class BaseService<T, ID extends Serializable, R extends BaseRep
         }
 
     }
-    @CacheEvict(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#record.id")
+    //@CacheEvict(value = Cache.APPLICATION ,key = "#root.targetClass.simpleName+':'+#record.id")
     @Override
     public T update(T record) {
         return dao.save(record);

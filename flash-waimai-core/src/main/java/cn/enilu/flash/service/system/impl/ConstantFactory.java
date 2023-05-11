@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Component
 @DependsOn("springContextHolder")
-@CacheConfig
+//@CacheConfig
 public class ConstantFactory implements IConstantFactory {
     public static TimeCacheMap<String, String> cache = new TimeCacheMap<String, String>(3600, 2);
     private RoleRepository roleRepository = SpringContextHolder.getBean(RoleRepository.class);
